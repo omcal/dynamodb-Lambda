@@ -47,10 +47,7 @@ func GetList(w http.ResponseWriter, r *http.Request) {
 
 func InitDynamoDB() error {
 	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-		return err
-	}
+
 	awsSession, err := session.NewSession(&aws.Config{
 		Credentials: credentials.NewStaticCredentials(os.Getenv("AWS_ACCESS_KEY_ID"), os.Getenv("AWS_SECRET_ACCESS_KEY"), ""),
 		Region:      aws.String(os.Getenv("AWS_REGION")),
