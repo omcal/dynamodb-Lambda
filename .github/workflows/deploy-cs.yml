@@ -42,5 +42,7 @@ jobs:
           docker push 851725556194.dkr.ecr.eu-central-1.amazonaws.com/dynoplaypic:${GITHUB_SHA}
           docker push 851725556194.dkr.ecr.eu-central-1.amazonaws.com/dynoplaypic:latest
 
-     
+      - name: Update ECS service
+        run: |
+          aws ecs update-service --cluster test  --service test11 --force-new-deployment
 
