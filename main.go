@@ -22,5 +22,5 @@ func main() {
 	r.HandleFunc("/picus/get/{key}", Util.GetItem).Methods("GET")
 	r.HandleFunc("/picus/{key}", Util.DeleteItem).Methods("DELETE")
 
-	log.Fatal(http.ListenAndServe(":8080", r))
+	log.Fatal(http.ListenAndServe(":80", r))
 }
