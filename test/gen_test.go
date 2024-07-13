@@ -87,6 +87,27 @@ func TestGetItem(t *testing.T) {
 	actual := strings.TrimSpace(rr.Body.String())
 	assert.Equal(t, expected, actual)
 }
+func TestDeleteItem(t *testing.T) {
+	setupTestData()
+
+	req, err := http.NewRequest("DELETE", "/picus/123", nil)
+	assert.NoError(t, err)
+
+	rr := httptest.NewRecorder()
+
+	router := mux.NewRouter()
+
+	router.HandleFunc("/picus/{key}", Util.DeleteItem).Methods("DELETE")
+
+	router.ServeHTTP(rr, req)
+
+	assert.Equal(t, http.StatusOK, rr.Code)
+
+	expected := "Item deleted successfully"
+	actual := strings.TrimSpace(rr.Body.String())
+
+	assert.Equal(t, expected, actual)
+}
 
 func TestMain(m *testing.M) {
 	Util.InitDynamoDB()

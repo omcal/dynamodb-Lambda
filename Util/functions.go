@@ -7,6 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 	"log"
@@ -15,6 +16,7 @@ import (
 )
 
 var Svc *dynamodb.DynamoDB
+var lambdaSvc *lambda.Lambda
 
 type Item struct {
 	ID   string `json:"id"`
@@ -35,8 +37,8 @@ func GetList(w http.ResponseWriter, r *http.Request) {
 	items := []Item{}
 	for _, i := range result.Items {
 		item := Item{
-			ID:   *i["id"].S,
-			Data: *i["data"].S,
+			ID:   *(i["id"].S),
+			Data: *(i["data"].S),
 		}
 		items = append(items, item)
 	}
@@ -57,6 +59,7 @@ func InitDynamoDB() error {
 		return err
 	}
 	Svc = dynamodb.New(awsSession)
+	lambdaSvc = lambda.New(awsSession)
 	return nil
 
 }
@@ -117,4 +120,57 @@ func GetItem(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(item)
+}
+
+func DeleteItem(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	key := vars["key"]
+
+	payload := []map[string]string{
+		{"id": key},
+	}
+	payloadBytes, err := json.Marshal(payload)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	input := &lambda.InvokeInput{
+		FunctionName: aws.String("delFromDyno"),
+		Payload:      payloadBytes,
+	}
+
+	result, err := lambdaSvc.Invoke(input)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	var lambdaResponse map[string]interface{}
+	err = json.Unmarshal(result.Payload, &lambdaResponse)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if statusCode, ok := lambdaResponse["statusCode"]; ok {
+		if statusCode.(float64) != 200 {
+			if body, ok := lambdaResponse["body"]; ok {
+				var bodyJSON map[string]interface{}
+				err = json.Unmarshal([]byte(body.(string)), &bodyJSON)
+				if err != nil {
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
+
+				if errorMessage, ok := bodyJSON["error"]; ok {
+					http.Error(w, fmt.Sprintf("%v", errorMessage), http.StatusInternalServerError)
+					return
+				}
+			}
+		}
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Item deleted successfully"))
 }
