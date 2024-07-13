@@ -3,7 +3,8 @@ name: Deploy to ECS with ECR
 on:
   push:
     branches:
-      - main  # adjust to your main branch
+      - master 
+      - deployment # adjust to your main branch
 
 jobs:
   deploy:
