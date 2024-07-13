@@ -20,6 +20,7 @@ func main() {
 	r.HandleFunc("/picus/list", Util.GetList).Methods("GET")
 	r.HandleFunc("/picus/put", Util.PutItem).Methods("POST")
 	r.HandleFunc("/picus/get/{key}", Util.GetItem).Methods("GET")
+	r.HandleFunc("/picus/{key}", Util.DeleteItem).Methods("DELETE")
 
 	log.Fatal(http.ListenAndServe(":8080", r))
 }
