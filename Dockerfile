@@ -24,6 +24,6 @@ COPY --from=build /app/myapp .
 
 # Set the timezone and install CA certificates
 RUN apk --no-cache add ca-certificates tzdata
-COPY .env /app
+# COPY .env /app
 # Set the entrypoint command
 ENTRYPOINT ["/app/myapp"]
