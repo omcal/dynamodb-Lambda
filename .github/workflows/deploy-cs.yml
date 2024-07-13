@@ -20,12 +20,13 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
+          
       - name: Create .env file
         run: |
-          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID}" >> .env
-          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY}}" >> .env
-          echo "AWS_REGION=${{ secrets.AWS_REGION}}" >> .env
-          echo "DB_NAME=${{ secrets.DB_NAME}}" >> .env
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
+          echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> .env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -41,7 +42,5 @@ jobs:
           docker push 851725556194.dkr.ecr.eu-central-1.amazonaws.com/dynoplaypic:${GITHUB_SHA}
           docker push 851725556194.dkr.ecr.eu-central-1.amazonaws.com/dynoplaypic:latest
 
-      - name: Update ECS service
-        run: |
-          aws ecs update-service --cluster test --service test11 --force-new-deployment
+     
 
