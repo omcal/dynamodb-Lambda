@@ -1,0 +1,40 @@
+name: Deploy to ECS with ECR
+
+on:
+  push:
+    branches:
+      - main  # adjust to your main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build Docker image
+        run: |
+          docker build -t 851725556194.dkr.ecr.eu-central-1.amazonaws.com/dynoplaypic:${GITHUB_SHA} .
+          docker tag 851725556194.dkr.ecr.eu-central-1.amazonaws.com/dynoplaypic:${GITHUB_SHA}
+
+      - name: Push Docker image to Amazon ECR
+        run: |
+          docker push 851725556194.dkr.ecr.eu-central-1.amazonaws.com/dynoplaypic:${GITHUB_SHA} 
+          docker push 851725556194.dkr.ecr.eu-central-1.amazonaws.com/dynoplaypic:${GITHUB_SHA}
+
+      - name: Update ECS service
+        run: |
+          aws ecs update-service --cluster test --service test11 -ecs-service-name --force-new-deployment
+
