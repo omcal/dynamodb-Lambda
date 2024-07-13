@@ -78,14 +78,14 @@ func TestGetItem(t *testing.T) {
 
 	rr := httptest.NewRecorder()
 	router := mux.NewRouter()
-	router.HandleFunc("/picus/get/123", Util.GetItem)
+	router.HandleFunc("/picus/get/{key}", Util.GetItem)
 	router.ServeHTTP(rr, req)
 
 	assert.Equal(t, http.StatusOK, rr.Code)
 
 	expected := `{"id":"123","data":"test data"}`
 	actual := strings.TrimSpace(rr.Body.String())
-	assert.NotEqual(t, expected, actual)
+	assert.Equal(t, expected, actual)
 }
 func TestDeleteItem(t *testing.T) {
 	setupTestData()
