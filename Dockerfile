@@ -27,6 +27,6 @@ RUN apk --no-cache add ca-certificates tzdata
 
 COPY .env /app
 
-EXPOSE 8080
+EXPOSE 80
 # Set the entrypoint command
 ENTRYPOINT ["/app/myapp"]
