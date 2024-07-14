@@ -37,14 +37,23 @@ You should  replace IP with the `localhost:8080`
 8. [Mistakes and Improvements](#mistakesandimprovements)
 
 ## Introduction <a name="introduction"></a>
+
+There is small http application's deployment and architecture. Also I added the lamba function's IAM setting.
+
 ![Basic Architecture](./image/arch-1.png)
 I try to draw basic Architecture.
 
 
 ![iam-policy](./image/iam-policy.png)
+I give   full access over the DynamoDB. So we can read/write to DynamoDB.
 
 
 ![Github Actions](./image/arch-2.png)
+
+There are two action file. For saving resource the deployment one is only triggered after the merge.
+
+For every request the test and build one runs.
+
 
 ## Create DynamoDB <a name="createdynamodb"></a>
 I used the AWS UI to create DynamoDB. For the key, I chose `id` which is of string type.
