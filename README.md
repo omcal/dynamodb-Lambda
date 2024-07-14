@@ -1,4 +1,4 @@
-# dyno-test
+# Dynamodb Lambda Case 
 Thank you for reading :))
 ## Local Development
 For local development you have to create an .env file which is given in example.env file you should enter your own 
